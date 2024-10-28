@@ -68,12 +68,16 @@ const RootComponent = (props) => {
       const existingProductIndex = prevCart.products.findIndex(
         (product) => product.id === newProduct.id
       );
-
+  
+      if (existingProductIndex < 0) {
+        return prevCart;
+      }
+  
+      const existingProduct = prevCart.products[existingProductIndex];
       let updatedProducts;
-
-      if (existingProductIndex !== 0) {
+      if (existingProduct.qty > 0) {
         updatedProducts = prevCart.products.map((product, index) =>
-          index === existingProductIndex && product.qty > 0
+          index === existingProductIndex
             ? {
                 ...product,
                 qty: product.qty - 1,
@@ -82,13 +86,13 @@ const RootComponent = (props) => {
             : product
         );
       } else {
-        updatedProducts = [...prevCart.products];
+        updatedProducts = prevCart.products
       }
       const updatedTotalPrice = updatedProducts.reduce(
-        (total, product) => total - product.price,
+        (total, product) => total + product.price,
         0
       );
-
+  
       return {
         products: updatedProducts,
         totalPrice: updatedTotalPrice,
